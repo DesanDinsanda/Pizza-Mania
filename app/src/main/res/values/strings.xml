@@ -4,5 +4,6 @@
 
 <!--    select-location-->
     <string name="location_heading">Select a delivery location</string>
+    <string name="my_location_text">Your Location</string>
 
 </resources>

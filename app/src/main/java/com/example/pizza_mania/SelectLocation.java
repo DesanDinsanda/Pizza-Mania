@@ -1,21 +1,35 @@
 package com.example.pizza_mania;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationRequest;
 import android.os.Bundle;
 
+import com.google.android.gms.location.CurrentLocationRequest;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.pizza_mania.databinding.ActivitySelectLocationBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 public class SelectLocation extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivitySelectLocationBinding binding;
+    private FusedLocationProviderClient flpClient;
+    final private int locationPermReqCode = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +42,9 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //for fetching current location
+        flpClient = LocationServices.getFusedLocationProviderClient(this);
     }
 
     /**
@@ -42,6 +59,36 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        //limiting the map to SriLanka
+        LatLngBounds bounds = new LatLngBounds(new LatLng(5.11, 79.51), new LatLng(10.49, 82.02));
+        mMap.setLatLngBoundsForCameraTarget(bounds);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bounds.getCenter(), 7.75f));
+        mMap.setMinZoomPreference(7.75f);
 
+        //MyLocationButton behaviour
+        //adding this to onMapReady just in case
+        findViewById(R.id.myLocationBtn).setOnClickListener((v)->{
+           SelectCurrentLocation(mMap);
+        });
+    }
+
+    public void SelectCurrentLocation(GoogleMap mMap){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},locationPermReqCode );
+        }
+        CurrentLocationRequest request = new CurrentLocationRequest.Builder().setPriority(Priority.PRIORITY_HIGH_ACCURACY).build();
+        flpClient.getCurrentLocation(request,null)
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null){
+                            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
+                            String markerText = getString(R.string.my_location_text);
+                            mMap.addMarker(new MarkerOptions().position(currentLocation).title(markerText));
+                        }
+                    }
+                });
     }
 }
