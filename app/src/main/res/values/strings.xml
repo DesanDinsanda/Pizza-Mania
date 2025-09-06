@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Pizza-Mania</string>
+    <string name="title_activity_select_location">SelectLocation</string>
 </resources>
