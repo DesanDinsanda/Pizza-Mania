@@ -1,5 +1,6 @@
 package com.example.pizza_mania;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -9,6 +10,11 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationRequest;
 import android.os.Bundle;
+import android.transition.Visibility;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -20,8 +26,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.pizza_mania.databinding.ActivitySelectLocationBinding;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 public class SelectLocation extends FragmentActivity implements OnMapReadyCallback {
@@ -30,6 +38,9 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     private ActivitySelectLocationBinding binding;
     private FusedLocationProviderClient flpClient;
     final private int locationPermReqCode = 1;
+    private ImageButton myLocationBtn;
+    private ProgressBar myLocationLoadingAnim;
+    private Marker myLocationMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +48,9 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 
         binding = ActivitySelectLocationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        myLocationBtn = findViewById(R.id.myLocationBtn);
+        myLocationLoadingAnim = findViewById(R.id.myLocationLoadingAnim);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -67,8 +81,10 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 
         //MyLocationButton behaviour
         //adding this to onMapReady just in case
-        findViewById(R.id.myLocationBtn).setOnClickListener((v)->{
-           SelectCurrentLocation(mMap);
+        myLocationBtn.setOnClickListener((v)->{
+            myLocationLoadingAnim.setVisibility(View.VISIBLE); //enabling the loading animation
+            SelectCurrentLocation(mMap);
+            myLocationBtn.setEnabled(false); myLocationBtn.setAlpha(0.5f); //disabling button to stop spam while loading
         });
     }
 
@@ -83,12 +99,29 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null){
+                            myLocationLoadingAnim.setVisibility(View.GONE); //disabling the loading animation
+                            myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);//reenabling the button
                             LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
-                            String markerText = getString(R.string.my_location_text);
-                            mMap.addMarker(new MarkerOptions().position(currentLocation).title(markerText));
+                            addMyLocationMarker(currentLocation);
                         }
                     }
+                })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        myLocationLoadingAnim.setVisibility(View.GONE);
+                        myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);
+                        Toast.makeText(SelectLocation.this, "Failed to fetch location", Toast.LENGTH_SHORT).show();
+                    }
                 });
+    }
+
+    public void addMyLocationMarker(LatLng pos){
+        if (myLocationMarker != null){
+            myLocationMarker.remove();
+        }
+        String markerText = getString(R.string.my_location_text);
+        myLocationMarker = mMap.addMarker(new MarkerOptions().position(pos).title(markerText));
     }
 }
