@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationRequest;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -23,6 +25,7 @@ import com.google.android.gms.location.Priority;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -40,7 +43,8 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     final private int locationPermReqCode = 1;
     private ImageButton myLocationBtn;
     private ProgressBar myLocationLoadingAnim;
-    private Marker myLocationMarker;
+    private LottieAnimationView marker_anim;
+    private LatLng currentLocation = new LatLng(6.9271, 79.8612);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 
         myLocationBtn = findViewById(R.id.myLocationBtn);
         myLocationLoadingAnim = findViewById(R.id.myLocationLoadingAnim);
+        marker_anim  = findViewById(R.id.map_marker);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -86,6 +91,11 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
             SelectCurrentLocation(mMap);
             myLocationBtn.setEnabled(false); myLocationBtn.setAlpha(0.5f); //disabling button to stop spam while loading
         });
+
+        //updating the custom animated marker when the camera moves
+        mMap.setOnCameraMoveListener(()->{
+            drawMarker();
+        });
     }
 
     public void SelectCurrentLocation(GoogleMap mMap){
@@ -101,9 +111,10 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                         if (location != null){
                             myLocationLoadingAnim.setVisibility(View.GONE); //disabling the loading animation
                             myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);//reenabling the button
-                            LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                            currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
-                            addMyLocationMarker(currentLocation);
+                            drawMarker(); //animated marker
+                            marker_anim.setVisibility(View.VISIBLE);
                         }
                     }
                 })
@@ -117,11 +128,11 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                 });
     }
 
-    public void addMyLocationMarker(LatLng pos){
-        if (myLocationMarker != null){
-            myLocationMarker.remove();
-        }
-        String markerText = getString(R.string.my_location_text);
-        myLocationMarker = mMap.addMarker(new MarkerOptions().position(pos).title(markerText));
+    //function to move the animated marker to the target location
+    public void drawMarker(){
+        Point markerPos = mMap.getProjection().toScreenLocation(currentLocation);
+        marker_anim.setX(markerPos.x - marker_anim.getWidth()/2f);
+        marker_anim.setY(markerPos.y - marker_anim.getHeight()/2f);
     }
+
 }

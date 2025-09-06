@@ -59,4 +59,18 @@
         android:visibility="gone"
         />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/map_marker"
+        android:layout_width="71dp"
+        android:layout_height="83dp"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="@+id/map"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="@+id/map"
+        map:lottie_autoPlay="true"
+        map:lottie_loop="true"
+        map:lottie_rawRes="@raw/map_marker"
+        android:visibility="gone"/>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
