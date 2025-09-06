@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".SelectLocation">
 
     <fragment
@@ -19,7 +20,7 @@
         android:layout_width="205dp"
         android:layout_height="41dp"
         android:layout_marginStart="103dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="103dp"
         android:background="@drawable/info_background_rounded"
         android:gravity="center"
@@ -27,14 +28,14 @@
         android:textColor="@color/white"
         android:textSize="16sp"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.0"
+        map:layout_constraintHorizontal_bias="0.5"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
         android:id="@+id/myLocationBtn"
         android:layout_width="65dp"
-        android:layout_height="55dp"
+        android:layout_height="65dp"
         android:background="@color/transparent"
         android:scaleType="fitCenter"
         android:src="@drawable/crosshair"
@@ -50,27 +51,73 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         map:layout_constraintBottom_toTopOf="@+id/map"
         map:layout_constraintEnd_toStartOf="@+id/map"
         map:layout_constraintHorizontal_bias="0.5"
         map:layout_constraintStart_toEndOf="@+id/map"
         map:layout_constraintTop_toBottomOf="@+id/map"
-        map:layout_constraintVertical_bias="0.5"
-        android:visibility="gone"
-        />
+        map:layout_constraintVertical_bias="0.5" />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/map_marker"
         android:layout_width="71dp"
         android:layout_height="83dp"
+        android:visibility="gone"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="@+id/map"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="@+id/map"
         map:lottie_autoPlay="true"
         map:lottie_loop="true"
-        map:lottie_rawRes="@raw/map_marker"
-        android:visibility="gone"/>
+        map:lottie_rawRes="@raw/map_marker" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/location_selector"
+        android:layout_width="71dp"
+        android:layout_height="83dp"
+        android:visibility="gone"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.5"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintVertical_bias="0.5"
+        map:lottie_autoPlay="true"
+        map:lottie_loop="true"
+        map:lottie_rawRes="@raw/location_selector" />
+
+    <ImageButton
+        android:id="@+id/manualLocationBtn"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/pen"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.953"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintVertical_bias="0.626" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/finalizeLocationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_location_btn"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/orange"
+        android:enabled="false"
+        android:alpha="0.5"
+        map:cornerRadius="16dp"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.5"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="parent"
+        map:layout_constraintVertical_bias="0.976" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

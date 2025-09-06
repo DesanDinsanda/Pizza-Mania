@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.pizza_mania.databinding.ActivitySelectLocationBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.button.MaterialButton;
 
 public class SelectLocation extends FragmentActivity implements OnMapReadyCallback {
 
@@ -42,9 +43,13 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     private FusedLocationProviderClient flpClient;
     final private int locationPermReqCode = 1;
     private ImageButton myLocationBtn;
+    private ImageButton manualLocationBtn;
+    private MaterialButton finalizeLocationBtn;
     private ProgressBar myLocationLoadingAnim;
     private LottieAnimationView marker_anim;
-    private LatLng currentLocation = new LatLng(6.9271, 79.8612);
+    private LottieAnimationView location_selector_anim;
+    private LatLng currentLocation = new LatLng(6.9271, 79.8612); //colombo latlng to avoid null error at startup
+    private LatLng deliveryLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +58,13 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         binding = ActivitySelectLocationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //global vars
         myLocationBtn = findViewById(R.id.myLocationBtn);
+        manualLocationBtn = findViewById(R.id.manualLocationBtn);
+        finalizeLocationBtn = findViewById(R.id.finalizeLocationBtn);
         myLocationLoadingAnim = findViewById(R.id.myLocationLoadingAnim);
         marker_anim  = findViewById(R.id.map_marker);
+        location_selector_anim = findViewById(R.id.location_selector);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -87,14 +96,39 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         //MyLocationButton behaviour
         //adding this to onMapReady just in case
         myLocationBtn.setOnClickListener((v)->{
+            location_selector_anim.setVisibility(View.GONE); //disabling cursor for manual location selector
             myLocationLoadingAnim.setVisibility(View.VISIBLE); //enabling the loading animation
             SelectCurrentLocation(mMap);
             myLocationBtn.setEnabled(false); myLocationBtn.setAlpha(0.5f); //disabling button to stop spam while loading
+            finalizeLocationBtn.setEnabled(false); finalizeLocationBtn.setAlpha(0.5f); //disabling this till the location is loaded
+            manualLocationBtn.setEnabled(false); manualLocationBtn.setAlpha(0.5f); //same here
+        });
+
+        //manual location selection button
+        manualLocationBtn.setOnClickListener((v)->{
+            marker_anim.setVisibility(View.GONE); //disabling the marker from MyLocation
+            location_selector_anim.setVisibility(View.VISIBLE); //enabling the cursor
+            enableFinalizeBtn();
+        });
+
+        //finalize location btn behaviour
+        finalizeLocationBtn.setOnClickListener((v)->{
+            if (deliveryLocation!=null){
+                Toast.makeText(this, String.format("Lat: %f Lng: %f", deliveryLocation.latitude, deliveryLocation.longitude), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Please select a location to deliver", Toast.LENGTH_SHORT).show();
+            }
         });
 
         //updating the custom animated marker when the camera moves
         mMap.setOnCameraMoveListener(()->{
             drawMarker();
+        });
+
+        mMap.setOnCameraIdleListener(()->{
+            if (location_selector_anim.getVisibility()==View.VISIBLE){
+                deliveryLocation=mMap.getCameraPosition().target; //updating the delivery loc only if the manual location selection is on
+            }
         });
     }
 
@@ -111,8 +145,11 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                         if (location != null){
                             myLocationLoadingAnim.setVisibility(View.GONE); //disabling the loading animation
                             myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);//reenabling the button
+                            manualLocationBtn.setEnabled(true); manualLocationBtn.setAlpha(1.0f);
+                            finalizeLocationBtn.setEnabled(true); finalizeLocationBtn.setAlpha(1.0f);
                             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f));
+                            deliveryLocation=currentLocation; //setting the current location as the deli location
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, mMap.getCameraPosition().zoom));
                             drawMarker(); //animated marker
                             marker_anim.setVisibility(View.VISIBLE);
                         }
@@ -122,7 +159,9 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         myLocationLoadingAnim.setVisibility(View.GONE);
-                        myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);
+                        myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);//reenabling the button
+                        manualLocationBtn.setEnabled(true); manualLocationBtn.setAlpha(1.0f);
+                        finalizeLocationBtn.setEnabled(true); finalizeLocationBtn.setAlpha(1.0f);
                         Toast.makeText(SelectLocation.this, "Failed to fetch location", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -133,6 +172,13 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         Point markerPos = mMap.getProjection().toScreenLocation(currentLocation);
         marker_anim.setX(markerPos.x - marker_anim.getWidth()/2f);
         marker_anim.setY(markerPos.y - marker_anim.getHeight()/2f);
+    }
+
+    public void enableFinalizeBtn(){
+        if (!finalizeLocationBtn.isEnabled()){
+            finalizeLocationBtn.setEnabled(true);
+            finalizeLocationBtn.setAlpha(1.0f);
+        }
     }
 
 }
