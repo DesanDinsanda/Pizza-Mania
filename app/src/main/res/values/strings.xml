@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Pizza-Mania</string>
     <string name="title_activity_select_location">SelectLocation</string>
+
+<!--    select-location-->
+    <string name="location_heading">Select a delivery location</string>
+
 </resources>
