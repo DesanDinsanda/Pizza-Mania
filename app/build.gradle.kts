@@ -48,4 +48,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
 
+    //Lottie animation
+    implementation("com.airbnb.android:lottie:6.0.0")
+    //Custom toast
+    implementation("com.github.GrenderG:Toasty:1.5.2")
+
 }
