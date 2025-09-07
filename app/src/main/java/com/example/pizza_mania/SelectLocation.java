@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.location.Location;
@@ -40,6 +41,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import okhttp3.OkHttpClient;
@@ -48,6 +51,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
 
 public class SelectLocation extends FragmentActivity implements OnMapReadyCallback {
 
@@ -64,6 +73,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     private LatLng currentLocation = new LatLng(6.9271, 79.8612); //colombo latlng to avoid null error at startup
     private LatLng deliveryLocation;
     final private String geoLocUrl = "https://nominatim.openstreetmap.org/";
+    private String SLJson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +89,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         myLocationLoadingAnim = findViewById(R.id.myLocationLoadingAnim);
         marker_anim  = findViewById(R.id.map_marker);
         location_selector_anim = findViewById(R.id.location_selector);
+        SLJson = loadJsonMap(SelectLocation.this, "srilanka.json");
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -88,7 +99,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         //for fetching current location
         flpClient = LocationServices.getFusedLocationProviderClient(this);
 
-        //geolocation client
+        //geolocation client - need this for OSM geocoding. it wont work otherwise
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(chain -> chain.proceed(
                         chain.request().newBuilder()
@@ -114,6 +125,14 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                             GeoLocationResponse parsedResp = response.body().get(0);
                             String showText = String.format("Lat: %f Lng: %f", parsedResp.lat, parsedResp.lon);
                             Toast.makeText(SelectLocation.this, showText, Toast.LENGTH_SHORT).show();
+
+                            //this part checks if the entered location is in sri lanka or not
+                            if(checkIfCoordsInMap(new LatLng(parsedResp.lat, parsedResp.lon), SLJson)){
+                                Toast.makeText(SelectLocation.this, "Sri Lanka", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(SelectLocation.this, "Other Country", Toast.LENGTH_SHORT).show();
+                            }
+
                         } else {
                             Toast.makeText(SelectLocation.this, "Failed to fetch location", Toast.LENGTH_SHORT).show();
                         }
@@ -231,6 +250,38 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         if (!finalizeLocationBtn.isEnabled()){
             finalizeLocationBtn.setEnabled(true);
             finalizeLocationBtn.setAlpha(1.0f);
+        }
+    }
+
+    //function to load sl json map
+    public String loadJsonMap(Context context, String filename){
+        try{
+            InputStream input = context.getAssets().open(filename);
+            int size = input.available();
+            byte[] buffer = new byte[size];
+            input.read(buffer);
+            input.close();
+            return new String(buffer, "UTF-8");
+        } catch (IOException ex){
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean checkIfCoordsInMap(LatLng coords, String countryJson){
+        //loading sri lanka json map to check coords later
+        GeoJsonReader GeoReader = new GeoJsonReader();
+        try {
+            Geometry polygon = GeoReader.read(countryJson);
+            GeometryFactory factory = new GeometryFactory();
+            org.locationtech.jts.geom.Point point = factory.createPoint(new Coordinate(coords.longitude, coords.latitude));
+            if (polygon.contains(point)){
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 
