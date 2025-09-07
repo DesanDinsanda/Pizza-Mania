@@ -13,11 +13,14 @@ import android.location.LocationRequest;
 import android.os.Bundle;
 import android.transition.Visibility;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.pizza_mania.model.GeoLocationResponse;
+import com.example.pizza_mania.service.GeoLocationInterface;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -35,6 +38,16 @@ import com.example.pizza_mania.databinding.ActivitySelectLocationBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.List;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SelectLocation extends FragmentActivity implements OnMapReadyCallback {
 
@@ -50,6 +63,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     private LottieAnimationView location_selector_anim;
     private LatLng currentLocation = new LatLng(6.9271, 79.8612); //colombo latlng to avoid null error at startup
     private LatLng deliveryLocation;
+    final private String geoLocUrl = "https://nominatim.openstreetmap.org/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +87,45 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 
         //for fetching current location
         flpClient = LocationServices.getFusedLocationProviderClient(this);
+
+        //geolocation client
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(chain -> chain.proceed(
+                        chain.request().newBuilder()
+                                .header("User-Agent", "Pizza-Mania/1.0 (pizzamania@gmail.com)")
+                                .build()
+                ))
+                .build();
+        Retrofit retroClient = new Retrofit.Builder().baseUrl(geoLocUrl).client(client).addConverterFactory(GsonConverterFactory.create()).build();
+        GeoLocationInterface geoLocationService = retroClient.create(GeoLocationInterface.class);
+
+        //geolocation btn setup
+        Button geoLocationBtn = findViewById(R.id.geolocationBtn);
+        TextInputEditText geoLocationText = findViewById(R.id.geolocationText);
+        geoLocationBtn.setOnClickListener((v)->{
+            if (!geoLocationText.getText().isEmpty()){
+                String text = geoLocationText.getText().toString();
+                Call<List<GeoLocationResponse>> coords = geoLocationService.getCoords(text, "json", 1);
+
+                coords.enqueue(new Callback<List<GeoLocationResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<GeoLocationResponse>> call, Response<List<GeoLocationResponse>> response) {
+                        if (response.isSuccessful() && response.body() != null){
+                            GeoLocationResponse parsedResp = response.body().get(0);
+                            String showText = String.format("Lat: %f Lng: %f", parsedResp.lat, parsedResp.lon);
+                            Toast.makeText(SelectLocation.this, showText, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(SelectLocation.this, "Failed to fetch location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<GeoLocationResponse>> call, Throwable t) {
+                        Toast.makeText(SelectLocation.this, "Location Service Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     /**

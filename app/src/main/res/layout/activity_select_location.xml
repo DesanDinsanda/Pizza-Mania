@@ -17,18 +17,14 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="205dp"
-        android:layout_height="41dp"
-        android:layout_marginStart="103dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="103dp"
+        android:layout_width="442dp"
+        android:layout_height="42dp"
         android:background="@drawable/info_background_rounded"
         android:gravity="center"
         android:text="@string/location_heading"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="20sp"
         map:layout_constraintEnd_toEndOf="parent"
-        map:layout_constraintHorizontal_bias="0.5"
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent" />
 
@@ -105,12 +101,12 @@
         android:id="@+id/finalizeLocationBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/select_location_btn"
-        android:textSize="20sp"
-        android:textColor="@color/white"
+        android:alpha="0.5"
         android:backgroundTint="@color/orange"
         android:enabled="false"
-        android:alpha="0.5"
+        android:text="@string/select_location_btn"
+        android:textColor="@color/white"
+        android:textSize="20sp"
         map:cornerRadius="16dp"
         map:layout_constraintBottom_toBottomOf="parent"
         map:layout_constraintEnd_toEndOf="parent"
@@ -118,6 +114,54 @@
         map:layout_constraintStart_toStartOf="parent"
         map:layout_constraintTop_toTopOf="parent"
         map:layout_constraintVertical_bias="0.976" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="402dp"
+        android:layout_height="84dp"
+        map:layout_constraintBottom_toBottomOf="@+id/finalizeLocationBtn"
+        map:layout_constraintEnd_toEndOf="parent"
+        map:layout_constraintHorizontal_bias="0.0"
+        map:layout_constraintStart_toStartOf="parent"
+        map:layout_constraintTop_toTopOf="@+id/map"
+        map:layout_constraintVertical_bias="0.044">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            map:layout_constraintBaseline_toBaselineOf="@+id/geolocationBtn"
+            map:layout_constraintEnd_toStartOf="@+id/geolocationBtn"
+            map:layout_constraintStart_toStartOf="parent">
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/geolocationText"
+            android:layout_width="255dp"
+            android:layout_height="60dp"
+            android:hint="@string/search_location_hint"
+            android:textAlignment="center"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.108"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/geolocationBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/search_location"
+            map:layout_constraintBottom_toBottomOf="parent"
+            map:layout_constraintEnd_toEndOf="parent"
+            map:layout_constraintHorizontal_bias="0.919"
+            map:layout_constraintStart_toStartOf="parent"
+            map:layout_constraintTop_toTopOf="parent"
+            map:layout_constraintVertical_bias="0.555" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

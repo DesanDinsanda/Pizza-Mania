@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.pizza_mania"
-        minSdk = 34
+        minSdk = 35
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -56,6 +56,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.airbnb.android:lottie:6.6.6")
     implementation("com.google.android.material:material:1.13.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
 }
 
 secrets {
