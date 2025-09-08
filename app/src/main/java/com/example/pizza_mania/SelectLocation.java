@@ -17,6 +17,7 @@ import android.text.TextWatcher;
 import android.transition.Visibility;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.pizza_mania.model.AdapterItem;
 import com.example.pizza_mania.model.AutoCompleteResult;
 import com.example.pizza_mania.model.GeoLocationResponse;
 import com.example.pizza_mania.service.AutoCompleteInterface;
@@ -83,7 +85,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     final private String geoLocUrl = "https://nominatim.openstreetmap.org/";
     private String SLJson;
     private Call<AutoCompleteResult> autoCompleteCall;
-    private ArrayAdapter<String> autoCompAdapter;
+    private ArrayAdapter<AdapterItem> autoCompAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,7 +177,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                         chain.request().newBuilder()
                                 .header("User-Agent", "Pizza-Mania/1.0 (pizzamania@gmail.com)")
                                 .build()
-                )).readTimeout(20, TimeUnit.SECONDS)
+                )).readTimeout(60, TimeUnit.SECONDS)
                 .build();
         Retrofit retroClient = new Retrofit.Builder().baseUrl(geoLocUrl).client(client).addConverterFactory(GsonConverterFactory.create()).build();
         GeoLocationInterface geoLocationService = retroClient.create(GeoLocationInterface.class);
@@ -230,6 +232,24 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         geoLocationText.setDropDownBackgroundResource(R.drawable.autocomplete_background);
         geoLocationText.setDropDownHorizontalOffset(50);
         geoLocationText.setDropDownVerticalOffset(1);
+        geoLocationText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                AdapterItem item = (AdapterItem) adapterView.getItemAtPosition(i);
+                if (checkIfCoordsInMap(new LatLng(item.getLat(), item.getLon()), SLJson)){
+                    currentLocation = new LatLng(item.getLat(), item.getLon());
+                    deliveryLocation=currentLocation;
+                    drawMarker(currentLocation);
+                    marker_anim.setVisibility(View.VISIBLE);
+                    location_selector_anim.setVisibility(View.GONE);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 18f));
+                } else {
+                    String text = getString(R.string.location_not_in_country);
+                    Toast.makeText(SelectLocation.this, text, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
         geoLocationText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
@@ -240,7 +260,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 //                            Toast.makeText(SelectLocation.this, String.valueOf(result.features.size()), Toast.LENGTH_SHORT).show();
                             autoCompAdapter.clear();
                             for (AutoCompleteResult.Feature feature : result.features){
-                                autoCompAdapter.add(feature.properties.name);
+                                autoCompAdapter.add(new AdapterItem(feature.properties.name, feature.geometry.coordinates.getLast(), feature.geometry.coordinates.getFirst()));
                             }
                             autoCompAdapter.getFilter().filter(geoLocationText.getText(), geoLocationText);
                         }
