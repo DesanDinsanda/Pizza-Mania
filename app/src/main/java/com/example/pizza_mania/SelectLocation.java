@@ -168,9 +168,10 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         GeoLocationInterface geoLocationService = retroClient.create(GeoLocationInterface.class);
 
         //geolocation btn setup
-        Button geoLocationBtn = findViewById(R.id.geolocationBtn);
+        ImageButton geoLocationBtn = findViewById(R.id.geolocationBtn);
         TextInputEditText geoLocationText = findViewById(R.id.geolocationText);
         geoLocationBtn.setOnClickListener((v)->{
+            geoLocationText.clearFocus();
             if (!geoLocationText.getText().isEmpty()){
                 String text = geoLocationText.getText().toString();
                 Call<List<GeoLocationResponse>> coords = geoLocationService.getCoords(text, "json", 1);
@@ -188,6 +189,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                                 deliveryLocation=parsedLocation;
                                 drawMarker(currentLocation);
                                 marker_anim.setVisibility(View.VISIBLE);
+                                location_selector_anim.setVisibility(View.GONE);
                                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(parsedResp.lat, parsedResp.lon), 18f));
                             } else {
                                 String text = getString(R.string.location_not_in_country);
