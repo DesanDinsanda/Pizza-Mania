@@ -12,15 +12,22 @@ import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationRequest;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.Visibility;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.pizza_mania.model.AutoCompleteResult;
 import com.example.pizza_mania.model.GeoLocationResponse;
+import com.example.pizza_mania.service.AutoCompleteInterface;
 import com.example.pizza_mania.service.GeoLocationInterface;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -44,6 +51,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -74,6 +82,8 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     private LatLng deliveryLocation;
     final private String geoLocUrl = "https://nominatim.openstreetmap.org/";
     private String SLJson;
+    private Call<AutoCompleteResult> autoCompleteCall;
+    private ArrayAdapter<String> autoCompAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +108,9 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 
         //for fetching current location
         flpClient = LocationServices.getFusedLocationProviderClient(this);
+
+        //setting up the adapter for auto complete
+        autoCompAdapter = new ArrayAdapter<>(this, R.layout.autocomplete_layout, R.id.textViewItem);
     }
 
     /**
@@ -162,14 +175,14 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                         chain.request().newBuilder()
                                 .header("User-Agent", "Pizza-Mania/1.0 (pizzamania@gmail.com)")
                                 .build()
-                ))
+                )).readTimeout(20, TimeUnit.SECONDS)
                 .build();
         Retrofit retroClient = new Retrofit.Builder().baseUrl(geoLocUrl).client(client).addConverterFactory(GsonConverterFactory.create()).build();
         GeoLocationInterface geoLocationService = retroClient.create(GeoLocationInterface.class);
 
         //geolocation btn setup
         ImageButton geoLocationBtn = findViewById(R.id.geolocationBtn);
-        TextInputEditText geoLocationText = findViewById(R.id.geolocationText);
+        AutoCompleteTextView geoLocationText = findViewById(R.id.geolocationText);
         geoLocationBtn.setOnClickListener((v)->{
             geoLocationText.clearFocus();
             if (!geoLocationText.getText().isEmpty()){
@@ -208,8 +221,78 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                 });
             }
         });
+
+        //adding autocomplete to text field
+        Retrofit retrofitClient = new Retrofit.Builder().baseUrl("https://photon.komoot.io/").client(client).addConverterFactory(GsonConverterFactory.create()).build();
+        AutoCompleteInterface autoCompleteService = retrofitClient.create(AutoCompleteInterface.class);
+        geoLocationText.setThreshold(3);
+        geoLocationText.setAdapter(autoCompAdapter);
+        geoLocationText.setDropDownBackgroundResource(R.drawable.autocomplete_background);
+        geoLocationText.setDropDownHorizontalOffset(50);
+        geoLocationText.setDropDownVerticalOffset(1);
+        geoLocationText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (!geoLocationText.getText().isEmpty()){
+                    getAutocomplete(autoCompleteService, geoLocationText.getText().toString(), 5, currentLocation.latitude, currentLocation.longitude, new HandleAutoComplete() {
+                        @Override
+                        public void onSuccess(AutoCompleteResult result) {
+//                            Toast.makeText(SelectLocation.this, String.valueOf(result.features.size()), Toast.LENGTH_SHORT).show();
+                            autoCompAdapter.clear();
+                            for (AutoCompleteResult.Feature feature : result.features){
+                                autoCompAdapter.add(feature.properties.name);
+                            }
+                            autoCompAdapter.getFilter().filter(geoLocationText.getText(), geoLocationText);
+                        }
+
+                        @Override
+                        public void onFailure(Throwable t) {
+                            t.printStackTrace();
+                            Toast.makeText(SelectLocation.this, "Error encountered", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+        });
     }
 
+    public void getAutocomplete(AutoCompleteInterface service, String text, int limit, Double lat, Double lon, HandleAutoComplete callback){
+        if (autoCompleteCall != null && !autoCompleteCall.isCanceled()){ //making sure the queue doesnt get long
+            autoCompleteCall.cancel();
+        }
+
+        autoCompleteCall = service.getAutocompletions(text, limit, lat, lon);
+        autoCompleteCall.enqueue(new Callback<AutoCompleteResult>() {
+            @Override
+            public void onResponse(Call<AutoCompleteResult> call, Response<AutoCompleteResult> response) {
+                if (response.isSuccessful() && response.body()!=null){
+                    callback.onSuccess(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AutoCompleteResult> call, Throwable t) {
+                if (call.isCanceled()){
+                    return;
+                }
+                callback.onFailure(t);
+            }
+        });
+    }
+    public interface HandleAutoComplete{
+        public void onSuccess(AutoCompleteResult result);
+        public void onFailure(Throwable t);
+    }
     public void SelectCurrentLocation(GoogleMap mMap){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 || ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){

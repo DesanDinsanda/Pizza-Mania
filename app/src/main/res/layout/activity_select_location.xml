@@ -128,16 +128,13 @@
         map:layout_constraintTop_toTopOf="@+id/map"
         map:layout_constraintVertical_bias="0.068">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/geolocationText"
             android:layout_width="267dp"
             android:layout_height="35dp"
             android:background="@color/transparent"
-            android:hint="@string/search_location_hint"
-
             android:gravity="center"
-            tools:layout_editor_absoluteX="51dp"
-            tools:layout_editor_absoluteY="28dp" />
+            android:hint="@string/search_location_hint"/>
 
         <ImageButton
             android:id="@+id/geolocationBtn"
@@ -146,6 +143,7 @@
             android:background="@color/transparent"
             android:scaleType="fitCenter"
             android:src="@drawable/search" />
+
     </LinearLayout>
 
 
