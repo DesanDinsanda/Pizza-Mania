@@ -98,53 +98,6 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 
         //for fetching current location
         flpClient = LocationServices.getFusedLocationProviderClient(this);
-
-        //geolocation client - need this for OSM geocoding. it wont work otherwise
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(chain -> chain.proceed(
-                        chain.request().newBuilder()
-                                .header("User-Agent", "Pizza-Mania/1.0 (pizzamania@gmail.com)")
-                                .build()
-                ))
-                .build();
-        Retrofit retroClient = new Retrofit.Builder().baseUrl(geoLocUrl).client(client).addConverterFactory(GsonConverterFactory.create()).build();
-        GeoLocationInterface geoLocationService = retroClient.create(GeoLocationInterface.class);
-
-        //geolocation btn setup
-        Button geoLocationBtn = findViewById(R.id.geolocationBtn);
-        TextInputEditText geoLocationText = findViewById(R.id.geolocationText);
-        geoLocationBtn.setOnClickListener((v)->{
-            if (!geoLocationText.getText().isEmpty()){
-                String text = geoLocationText.getText().toString();
-                Call<List<GeoLocationResponse>> coords = geoLocationService.getCoords(text, "json", 1);
-
-                coords.enqueue(new Callback<List<GeoLocationResponse>>() {
-                    @Override
-                    public void onResponse(Call<List<GeoLocationResponse>> call, Response<List<GeoLocationResponse>> response) {
-                        if (response.isSuccessful() && response.body() != null){
-                            GeoLocationResponse parsedResp = response.body().get(0);
-                            String showText = String.format("Lat: %f Lng: %f", parsedResp.lat, parsedResp.lon);
-                            Toast.makeText(SelectLocation.this, showText, Toast.LENGTH_SHORT).show();
-
-                            //this part checks if the entered location is in sri lanka or not
-                            if(checkIfCoordsInMap(new LatLng(parsedResp.lat, parsedResp.lon), SLJson)){
-                                Toast.makeText(SelectLocation.this, "Sri Lanka", Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(SelectLocation.this, "Other Country", Toast.LENGTH_SHORT).show();
-                            }
-
-                        } else {
-                            Toast.makeText(SelectLocation.this, "Failed to fetch location", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<List<GeoLocationResponse>> call, Throwable t) {
-                        Toast.makeText(SelectLocation.this, "Location Service Error", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
     }
 
     /**
@@ -194,12 +147,63 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
 
         //updating the custom animated marker when the camera moves
         mMap.setOnCameraMoveListener(()->{
-            drawMarker();
+            drawMarker(currentLocation);
         });
 
         mMap.setOnCameraIdleListener(()->{
             if (location_selector_anim.getVisibility()==View.VISIBLE){
                 deliveryLocation=mMap.getCameraPosition().target; //updating the delivery loc only if the manual location selection is on
+            }
+        });
+
+        //geolocation client - need this for OSM geocoding. it wont work otherwise
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(chain -> chain.proceed(
+                        chain.request().newBuilder()
+                                .header("User-Agent", "Pizza-Mania/1.0 (pizzamania@gmail.com)")
+                                .build()
+                ))
+                .build();
+        Retrofit retroClient = new Retrofit.Builder().baseUrl(geoLocUrl).client(client).addConverterFactory(GsonConverterFactory.create()).build();
+        GeoLocationInterface geoLocationService = retroClient.create(GeoLocationInterface.class);
+
+        //geolocation btn setup
+        Button geoLocationBtn = findViewById(R.id.geolocationBtn);
+        TextInputEditText geoLocationText = findViewById(R.id.geolocationText);
+        geoLocationBtn.setOnClickListener((v)->{
+            if (!geoLocationText.getText().isEmpty()){
+                String text = geoLocationText.getText().toString();
+                Call<List<GeoLocationResponse>> coords = geoLocationService.getCoords(text, "json", 1);
+
+                coords.enqueue(new Callback<List<GeoLocationResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<GeoLocationResponse>> call, Response<List<GeoLocationResponse>> response) {
+                        if (response.isSuccessful() && response.body() != null && !response.body().isEmpty()){
+                            GeoLocationResponse parsedResp = response.body().get(0);
+                            LatLng parsedLocation = new LatLng(parsedResp.lat, parsedResp.lon);
+
+                            //this part checks if the entered location is in sri lanka or not
+                            if(checkIfCoordsInMap(parsedLocation, SLJson)){
+                                currentLocation=parsedLocation;
+                                deliveryLocation=parsedLocation;
+                                drawMarker(currentLocation);
+                                marker_anim.setVisibility(View.VISIBLE);
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(parsedResp.lat, parsedResp.lon), 18f));
+                            } else {
+                                String text = getString(R.string.location_not_in_country);
+                                Toast.makeText(SelectLocation.this, text, Toast.LENGTH_SHORT).show();
+                            }
+
+                        } else {
+                            Toast.makeText(SelectLocation.this, "Failed to fetch location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<GeoLocationResponse>> call, Throwable t) {
+                        Toast.makeText(SelectLocation.this, "Location Service Error", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
@@ -222,7 +226,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                             deliveryLocation=currentLocation; //setting the current location as the deli location
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, mMap.getCameraPosition().zoom));
-                            drawMarker(); //animated marker
+                            drawMarker(currentLocation); //animated marker
                             marker_anim.setVisibility(View.VISIBLE);
                         }
                     }
@@ -240,8 +244,8 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     }
 
     //function to move the animated marker to the target location
-    public void drawMarker(){
-        Point markerPos = mMap.getProjection().toScreenLocation(currentLocation);
+    public void drawMarker(LatLng location){
+        Point markerPos = mMap.getProjection().toScreenLocation(location);
         marker_anim.setX(markerPos.x - marker_anim.getWidth()/2f);
         marker_anim.setY(markerPos.y - marker_anim.getHeight()/2f);
     }
