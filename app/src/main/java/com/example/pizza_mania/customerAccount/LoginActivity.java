@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pizza_mania.MainActivity;
 import com.example.pizza_mania.R;
+import com.example.pizza_mania.customerHome.CustomerHome;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -76,7 +77,7 @@ public class LoginActivity extends AppCompatActivity {
                 changeInProgress(false);
                 if(task.isSuccessful()){
                     if(firebaseAuth.getCurrentUser().isEmailVerified()){
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        Intent intent = new Intent(LoginActivity.this, CustomerHome.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();

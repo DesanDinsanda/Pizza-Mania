@@ -52,5 +52,6 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.0.0")
     //Custom toast
     implementation("com.github.GrenderG:Toasty:1.5.2")
+    implementation("com.google.android.material:material:1.11.0")
 
 }
