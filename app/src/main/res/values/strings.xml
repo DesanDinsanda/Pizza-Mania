@@ -2,7 +2,7 @@
     <string name="app_name">Pizza-Mania</string>
     <string name="title_activity_select_location">SelectLocation</string>
 
-<!--    select-location-->
+    <!--    select-location-->
     <string name="location_heading">Select a delivery location</string>
     <string name="my_location_text">Your Location</string>
     <string name="select_location_btn">Select Location</string>

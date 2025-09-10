@@ -66,6 +66,11 @@ dependencies {
     //Custom toast
     implementation("com.github.GrenderG:Toasty:1.5.2")
     implementation("com.google.android.material:material:1.11.0")
+    //payment
+    implementation("com.google.firebase:firebase-functions:20.4.0")
+    implementation("com.stripe:stripe-android:20.37.2")
+    implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
 }
 
 secrets {
