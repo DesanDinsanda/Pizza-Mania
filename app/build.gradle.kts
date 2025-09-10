@@ -61,9 +61,15 @@ dependencies {
     implementation("org.locationtech.jts:jts-core:1.20.0")
     implementation("org.locationtech.jts.io:jts-io-common:1.20.0")
 //    implementation("org.locationtech.jts.io:jts-io-geojson:1.20.0")
+     //Lottie animation
+    implementation("com.airbnb.android:lottie:6.0.0")
+    //Custom toast
+    implementation("com.github.GrenderG:Toasty:1.5.2")
+    implementation("com.google.android.material:material:1.11.0")
 }
 
 secrets {
     propertiesFileName = "secrets.properties"
     defaultPropertiesFileName = "local.defaults.properties"
 }
+
