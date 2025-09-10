@@ -227,7 +227,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         //adding autocomplete to text field
         Retrofit retrofitClient = new Retrofit.Builder().baseUrl("https://photon.komoot.io/").client(client).addConverterFactory(GsonConverterFactory.create()).build();
         AutoCompleteInterface autoCompleteService = retrofitClient.create(AutoCompleteInterface.class);
-        geoLocationText.setThreshold(3);
+        geoLocationText.setThreshold(2);
         geoLocationText.setAdapter(autoCompAdapter);
         geoLocationText.setDropDownBackgroundResource(R.drawable.autocomplete_background);
         geoLocationText.setDropDownHorizontalOffset(50);
@@ -243,6 +243,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                     marker_anim.setVisibility(View.VISIBLE);
                     location_selector_anim.setVisibility(View.GONE);
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 18f));
+                    enableFinalizeBtn();
                 } else {
                     String text = getString(R.string.location_not_in_country);
                     Toast.makeText(SelectLocation.this, text, Toast.LENGTH_SHORT).show();
@@ -327,7 +328,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                             myLocationLoadingAnim.setVisibility(View.GONE); //disabling the loading animation
                             myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);//reenabling the button
                             manualLocationBtn.setEnabled(true); manualLocationBtn.setAlpha(1.0f);
-                            finalizeLocationBtn.setEnabled(true); finalizeLocationBtn.setAlpha(1.0f);
+                            enableFinalizeBtn();
                             currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                             deliveryLocation=currentLocation; //setting the current location as the deli location
                             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, mMap.getCameraPosition().zoom));
@@ -342,7 +343,6 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                         myLocationLoadingAnim.setVisibility(View.GONE);
                         myLocationBtn.setEnabled(true); myLocationBtn.setAlpha(1.0f);//reenabling the button
                         manualLocationBtn.setEnabled(true); manualLocationBtn.setAlpha(1.0f);
-                        finalizeLocationBtn.setEnabled(true); finalizeLocationBtn.setAlpha(1.0f);
                         Toast.makeText(SelectLocation.this, "Failed to fetch location", Toast.LENGTH_SHORT).show();
                     }
                 });
