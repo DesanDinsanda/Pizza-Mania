@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,8 +14,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PizzaMania">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
         <activity
-            android:name=".MenuActivity"
+            android:name=".SelectLocation"
+            android:exported="true"
+            android:label="@string/title_activity_select_location">
+        </activity>
+        <activity
+            android:name=".OrderHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.UpdateAccount"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.AccountSettings"
+            android:exported="false" />
+        <activity
+            android:name=".customerHome.CustomerHome"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.SignupAddDetails"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.SignupMain"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,13 +55,20 @@
             </intent-filter>
         </activity>
 
+
         <activity
             android:name=".CartActivity"
             android:exported="false"/>
+  
+      <activity
+            android:name=".MenuActivity"
+            android:exported="false"/>
+
 
         <activity
             android:name=".MainActivity"
-            android:exported="false"/>
+            android:exported="false" />
+
     </application>
 
 </manifest>
