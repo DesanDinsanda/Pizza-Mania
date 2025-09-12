@@ -14,6 +14,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pizza_mania.utils.BottomNavigationHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -50,6 +52,9 @@ public class MenuActivity extends AppCompatActivity {
         menuRecycleView.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new MenuItemAdapter(this, menuItems, selectedBranch);
         menuRecycleView.setAdapter(adapter);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationHelper.setupBottomNavigation(this, bottomNavigationView, R.id.nav_menu);
 
         loadBranches();
 
