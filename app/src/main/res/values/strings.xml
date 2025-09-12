@@ -9,5 +9,7 @@
     <string name="search_location">Search</string>
     <string name="search_location_hint">"      "Enter address</string>
     <string name="location_not_in_country">Entered location is not within Sri Lanka</string>
+    <string name="fetching_location">Fetching Location</string>
+    <string name="home_location_btn_manual">CUSTOM LOCATION</string>
 
 </resources>

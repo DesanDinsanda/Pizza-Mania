@@ -1,6 +1,7 @@
 package com.example.pizza_mania;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pizza_mania.utils.BottomNavigationHelper;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Firebase;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,11 +37,16 @@ public class MenuActivity extends AppCompatActivity {
     private List<MenuItem> menuItems = new ArrayList<>();
     private MenuItemAdapter adapter;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private GlobalApp globalApp;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        globalApp = (GlobalApp) getApplication();
+        LatLng currentLocation = globalApp.getCurrentLocation();
+        getBranch(currentLocation);
 
         cartIcon = findViewById(R.id.cart);
         branchSpinner = findViewById(R.id.branch_spinner);
@@ -56,7 +63,7 @@ public class MenuActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         BottomNavigationHelper.setupBottomNavigation(this, bottomNavigationView, R.id.nav_menu);
 
-        loadBranches();
+//        loadBranches();
 
         branchSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
 
@@ -92,25 +99,52 @@ public class MenuActivity extends AppCompatActivity {
         btnViewCart.setOnClickListener(v-> startActivity(new Intent(MenuActivity.this, CartActivity.class)));
     }
 
-    private void loadBranches() {
+    private void getBranch(LatLng currentLocation){
+        if (currentLocation == null){
+            //add fail code here
+        }
         db.collection("Branch").get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        branchList.clear();
-                        for(QueryDocumentSnapshot doc : task.getResult()) {
-                            branchList.add(doc.getString("branchName"));
-                        }
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
-                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                        branchSpinner.setAdapter(adapter);
+                    if (task.isSuccessful()){
+                        float[] distance = new float[1];
+                        float distanceInMeters = 0;
+                        String branch = null;
 
-                        if (!branchList.isEmpty()) {
-                            selectedBranch = branchList.get(0);
-                            loadMenuItems(selectedCategory);
+                        for(QueryDocumentSnapshot result : task.getResult()){
+                            if (result != null){
+                                LatLng location = new LatLng(result.getDouble("latitude"), result.getDouble("longitude"));
+
+                                Location.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude, distance);
+                                if (distance[0] > distanceInMeters){
+                                    distanceInMeters = distance[0];
+                                    branch = result.getString("branchName");
+                                }
+                            }
                         }
+                        selectedBranch = branch;
+                        loadMenuItems(selectedCategory);
                     }
                 });
     }
+//    private void loadBranches() {
+//        db.collection("Branch").get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        branchList.clear();
+//                        for(QueryDocumentSnapshot doc : task.getResult()) {
+//                            branchList.add(doc.getString("branchName"));
+//                        }
+//                        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, branchList);
+//                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//                        branchSpinner.setAdapter(adapter);
+//
+//                        if (!branchList.isEmpty()) {
+//                            selectedBranch = branchList.get(0);
+//                            loadMenuItems(selectedCategory);
+//                        }
+//                    }
+//                });
+//    }
 
     private void loadMenuItems(String category) {
         if (selectedBranch == null) return;
