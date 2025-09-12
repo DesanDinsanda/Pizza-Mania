@@ -1,6 +1,7 @@
 package com.example.pizza_mania.customerHome;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pizza_mania.GlobalApp;
 import com.example.pizza_mania.R;
+import com.example.pizza_mania.SelectLocation;
 import com.example.pizza_mania.customerAccount.AccountSettings;
 import com.example.pizza_mania.utils.BottomNavigationHelper;
 import com.google.android.gms.location.CurrentLocationRequest;
@@ -59,6 +61,8 @@ public class CustomerHome extends AppCompatActivity {
 
     private FusedLocationProviderClient flpClient;
     private GlobalApp globalApp;
+    private static Boolean firstRun = true;
+    public static Boolean locationChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,13 @@ public class CustomerHome extends AppCompatActivity {
 
         flpClient = LocationServices.getFusedLocationProviderClient(this); //for fetching current location
 
+        //adding select location functionality
+        ConstraintLayout selectLocationBtn = findViewById(R.id.select_location_btn);
+        selectLocationBtn.setOnClickListener(v->{
+            Intent intent = new Intent(CustomerHome.this, SelectLocation.class);
+            startActivity(intent);
+        });
+
 
         txtFirstName = findViewById(R.id.txtFirstName);
         loadingLayout = findViewById(R.id.loadingLayout);
@@ -95,7 +106,22 @@ public class CustomerHome extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         BottomNavigationHelper.setupBottomNavigation(this, bottomNavigationView, R.id.nav_home);
 
-        fetchLocation();
+        //fetching mylocation only on first run
+        if (firstRun){
+            fetchLocation();
+            firstRun = false;
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //updating the select location btn text
+        if (locationChanged){
+            TextView textLabel = findViewById(R.id.txtLocation);
+            String text = getString(R.string.home_location_btn_manual);
+            textLabel.setText(text);
+        }
     }
 
     public void loadCustomerDetails(){
