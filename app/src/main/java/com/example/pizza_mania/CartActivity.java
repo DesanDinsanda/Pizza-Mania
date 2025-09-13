@@ -3,6 +3,7 @@ package com.example.pizza_mania;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,17 +13,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.stripe.android.PaymentConfiguration;
 import com.stripe.android.model.Address;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
 
+import org.checkerframework.checker.units.qual.C;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -52,10 +62,18 @@ public class CartActivity extends AppCompatActivity {
     private final Gson gson = new Gson();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
+    private FirebaseFirestore db = FirebaseFirestore.getInstance(); //firebase instance
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
+    private FirebaseUser user = auth.getCurrentUser();
+    private GlobalApp globalApp;
+    private float totalCost;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+
+        globalApp = (GlobalApp) getApplication();
 
         cartRecycleView = findViewById(R.id.cart_recycler_view);
         totalPriceText = findViewById(R.id.total_price_text);
@@ -80,13 +98,7 @@ public class CartActivity extends AppCompatActivity {
             createPaymentIntent();
 //            Toast.makeText(this, "Order Placed Successfully", Toast.LENGTH_SHORT).show();
 //
-//            executor.execute(() -> {
-//                dbHelper.clearCart();
-//                mainHandler.post(() -> {
-//                    refreshCart();
-//                    Toast.makeText(CartActivity.this, "Cart Cleared", Toast.LENGTH_SHORT).show();
-//                });
-//            });
+
         });
     }
 
@@ -201,7 +213,9 @@ public class CartActivity extends AppCompatActivity {
 //            statusText.setText("Payment Successful! 🎉");
             Toast.makeText(this, "Payment Success!", Toast.LENGTH_SHORT).show();
             changePlaceOrderBtnState(BtnState.DONE);
-            finish();
+            saveCartToFirestore();
+
+
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
 //            statusText.setText("Payment Canceled ❌");
             Toast.makeText(this, "Payment Canceled", Toast.LENGTH_SHORT).show();
@@ -214,6 +228,72 @@ public class CartActivity extends AppCompatActivity {
 //            btnPlaceOrder.setEnabled(true);
             changePlaceOrderBtnState(BtnState.TRY_AGAIN);
         }
+    }
+
+    private void saveCartToFirestore(){
+        final CountDownLatch latch = new CountDownLatch(cartItems.size());
+        Map<String, Object> data = new HashMap<>();
+        DocumentReference branchRef = db.collection("Branch").document(globalApp.getBranchID());
+        DocumentReference customerRef = db.collection("Customer").document(user.getUid());
+        data.put("branchID", branchRef);
+        data.put("cusID", customerRef);
+        data.put("deliveryCharge", 500);
+        data.put("location", Arrays.asList(globalApp.getCurrentLocation().latitude, globalApp.getCurrentLocation().longitude));
+        ArrayList<DocumentReference> cart = new ArrayList<>();
+        for (CartItem item : cartItems){
+            String branchNum = globalApp.getBranchID();
+            try{
+                db.collection(branchNum.equals("branchID_001") ? "MenuItem_Colombo" : "MenuItem_Galle").whereEqualTo("itemName", item.getItemName())
+                        .get()
+                        .addOnCompleteListener(task -> {
+                           if (task.isSuccessful() && !task.getResult().getDocuments().isEmpty()){
+                               cart.add(task.getResult().getDocuments().get(0).getReference());
+                           }
+                           latch.countDown();
+                        })
+                        .addOnFailureListener(e->{
+                            Log.d("ERROR", e.getMessage());
+                        });
+
+            } catch (Exception e) {
+                latch.countDown();
+                e.printStackTrace();
+            }
+        }
+        new Thread(()->{
+            try{
+                latch.await();
+                data.put("menuItem", cart);
+                data.put("orderDateTime", Timestamp.now());
+                data.put("orderStatus", "Pending");
+                data.put("totalBill", totalCost);
+
+                db.collection("Order").add(data)
+                        .addOnSuccessListener(ref -> {
+                            //saved the order to firestore
+                            runOnUiThread(()->{
+                                //clearing the cart from the local db
+                                executor.execute(() -> {
+                                    dbHelper.clearCart();
+                                    mainHandler.post(() -> {
+                                        refreshCart();
+                                        Toast.makeText(CartActivity.this, "Cart Cleared", Toast.LENGTH_SHORT).show();
+                                    });
+                                });
+                                finish();
+                            });
+                        })
+                        .addOnFailureListener(e -> {
+                            saveCartToFirestore(); //might be an infinite loop
+                            //failed to save to firestore
+                            e.printStackTrace();
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        totalCost = getTotalPrice();
     }
 
     private static class PaymentResponse {

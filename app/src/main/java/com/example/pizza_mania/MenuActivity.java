@@ -108,20 +108,27 @@ public class MenuActivity extends AppCompatActivity {
                     if (task.isSuccessful()){
                         float[] distance = new float[1];
                         float distanceInMeters = 0;
+                        Boolean firstLoop = true;
                         String branch = null;
+                        String branchID = null;
 
                         for(QueryDocumentSnapshot result : task.getResult()){
                             if (result != null){
                                 LatLng location = new LatLng(result.getDouble("latitude"), result.getDouble("longitude"));
-
                                 Location.distanceBetween(currentLocation.latitude, currentLocation.longitude, location.latitude, location.longitude, distance);
-                                if (distance[0] > distanceInMeters){
+                                if (firstLoop){
+                                    firstLoop=false;
+                                    distanceInMeters = distance[0];
+                                }
+                                if (distance[0] <= distanceInMeters){
                                     distanceInMeters = distance[0];
                                     branch = result.getString("branchName");
+                                    branchID = result.getId();
                                 }
                             }
                         }
                         selectedBranch = branch;
+                        globalApp.setBranchID(branchID);
                         loadMenuItems(selectedCategory);
                     }
                 });
