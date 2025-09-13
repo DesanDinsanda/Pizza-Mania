@@ -43,7 +43,7 @@
             android:layout_width="131dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="11dp"
-            android:backgroundTint="#4D4949"
+            android:backgroundTint="#FB6F38"
             android:text="Completed"
             android:textSize="14dp"
             android:textStyle="bold" />
