@@ -67,4 +67,59 @@
             android:text="Feedback" />
     </LinearLayout>
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/RelativeBottomBar">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#4D4949"
+            android:layout_above="@+id/bottomBar"
+            android:layout_marginBottom="15dp"/>
+
+        <LinearLayout
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottomBar">
+
+            <ImageButton
+                android:id="@+id/iconHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:src="@drawable/ic_home"
+                android:background="#FFFFFF"/>
+
+            <ImageButton
+                android:id="@+id/iconMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="60dp"
+                android:src="@drawable/ic_menu"
+                android:background="#FFFFFF"/>
+
+            <ImageButton
+                android:id="@+id/iconOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="60dp"
+                android:src="@drawable/ic_order_activities"
+                android:background="#FFFFFF"/>
+
+            <ImageButton
+                android:id="@+id/iconProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="60dp"
+                android:src="@drawable/ic_profile"
+                android:background="#FFFFFF"/>
+
+
+        </LinearLayout>
+    </RelativeLayout>
+
 </LinearLayout>
