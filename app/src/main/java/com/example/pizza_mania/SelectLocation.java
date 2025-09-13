@@ -23,9 +23,11 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.example.pizza_mania.customerHome.CustomerHome;
 import com.example.pizza_mania.model.AdapterItem;
 import com.example.pizza_mania.model.AutoCompleteResult;
 import com.example.pizza_mania.model.GeoLocationResponse;
@@ -86,6 +88,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     private String SLJson;
     private Call<AutoCompleteResult> autoCompleteCall;
     private ArrayAdapter<AdapterItem> autoCompAdapter;
+    private GlobalApp globalApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +105,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         marker_anim  = findViewById(R.id.map_marker);
         location_selector_anim = findViewById(R.id.location_selector);
         SLJson = loadJsonMap(SelectLocation.this, "srilanka.json");
+        globalApp = (GlobalApp) getApplication();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -154,7 +158,9 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         //finalize location btn behaviour
         finalizeLocationBtn.setOnClickListener((v)->{
             if (deliveryLocation!=null){
-                Toast.makeText(this, String.format("Lat: %f Lng: %f", deliveryLocation.latitude, deliveryLocation.longitude), Toast.LENGTH_SHORT).show();
+                globalApp.setCurrentLocation(deliveryLocation);
+                CustomerHome.locationChanged = true;
+                finish();
             } else {
                 Toast.makeText(this, "Please select a location to deliver", Toast.LENGTH_SHORT).show();
             }
@@ -206,6 +212,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
                                 marker_anim.setVisibility(View.VISIBLE);
                                 location_selector_anim.setVisibility(View.GONE);
                                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(parsedResp.lat, parsedResp.lon), 18f));
+                                enableFinalizeBtn();
                             } else {
                                 String text = getString(R.string.location_not_in_country);
                                 Toast.makeText(SelectLocation.this, text, Toast.LENGTH_SHORT).show();
