@@ -12,6 +12,8 @@ import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationRequest;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Visibility;
@@ -55,6 +57,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -160,6 +164,7 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
             if (deliveryLocation!=null){
                 globalApp.setCurrentLocation(deliveryLocation);
                 CustomerHome.locationChanged = true;
+                clearCart();
                 finish();
             } else {
                 Toast.makeText(this, "Please select a location to deliver", Toast.LENGTH_SHORT).show();
@@ -399,6 +404,15 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void clearCart(){
+        Executor executor = Executors.newSingleThreadExecutor();
+        CartDbHelper dbHelper = new CartDbHelper(this);
+
+        executor.execute(()->{
+            dbHelper.clearCart();
+        });
     }
 
 }
