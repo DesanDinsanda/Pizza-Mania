@@ -12,4 +12,10 @@
     <string name="fetching_location">Fetching Location</string>
     <string name="home_location_btn_manual">CUSTOM LOCATION</string>
 
+    <!--    payment button-->
+    <string name="payment_btn_enabled">Place Order</string>
+    <string name="payment_btn_loading">Loading...</string>
+    <string name="payment_btn_done">Order Placed</string>
+    <string name="payment_btn_try_again">Try Again</string>
+
 </resources>

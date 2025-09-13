@@ -37,7 +37,7 @@
         android:layout_height="50dp"
         android:id="@+id/btn_place_order"
         android:backgroundTint="@color/lightYellow"
-        android:text="Place Order"
+        android:text="@string/payment_btn_enabled"
         android:textSize="25dp"
         android:textColor="@color/brown"
         android:layout_marginLeft="80dp"
