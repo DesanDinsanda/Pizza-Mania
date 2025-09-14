@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.pizza_mania.GlobalApp;
 import com.example.pizza_mania.R;
 import com.example.pizza_mania.SelectLocation;
@@ -73,8 +75,8 @@ public class CustomerHome extends AppCompatActivity implements OnMapReadyCallbac
     private static Boolean firstRun = true;
     public static Boolean locationChanged = false;
     private GoogleMap mMap;
-    private Marker marker;
     private final int location_change_code = 3001;
+    private LottieAnimationView marker_anim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +94,8 @@ public class CustomerHome extends AppCompatActivity implements OnMapReadyCallbac
         if (mapFragment!=null){
             mapFragment.getMapAsync(this);
         }
+
+        marker_anim = findViewById(R.id.map_marker);
 
         //adding fetch location loading anim
         globalApp = (GlobalApp) getApplication();
@@ -151,6 +155,15 @@ public class CustomerHome extends AppCompatActivity implements OnMapReadyCallbac
             mMap.setLatLngBoundsForCameraTarget(bounds);
             markLocation(globalApp.getCurrentLocation());
         }
+        //updating map on move
+        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
+            @Override
+            public void onCameraMove() {
+                if (globalApp != null){
+                    drawMarker(globalApp.getCurrentLocation());
+                }
+            }
+        });
     }
 
     @Override
@@ -163,11 +176,14 @@ public class CustomerHome extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void markLocation(LatLng location){
-        if (marker != null){
-            marker.remove();
-        }
-        marker = mMap.addMarker(new MarkerOptions().position(location));
+        drawMarker(location);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f));
+    }
+
+    private void drawMarker(LatLng location){
+        Point point = mMap.getProjection().toScreenLocation(location);
+        marker_anim.setX(point.x - marker_anim.getWidth()/2f);
+        marker_anim.setY(point.y - marker_anim.getHeight()/2f);
     }
 
     public void loadCustomerDetails(){
