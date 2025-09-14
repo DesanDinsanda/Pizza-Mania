@@ -159,7 +159,7 @@ public class CustomerHome extends AppCompatActivity implements OnMapReadyCallbac
         mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
             @Override
             public void onCameraMove() {
-                if (globalApp != null){
+                if (globalApp.getCurrentLocation() != null){
                     drawMarker(globalApp.getCurrentLocation());
                 }
             }
@@ -170,8 +170,11 @@ public class CustomerHome extends AppCompatActivity implements OnMapReadyCallbac
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == location_change_code){
-            markLocation(globalApp.getCurrentLocation());
+        // Make sure map is loading
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
         }
     }
 
