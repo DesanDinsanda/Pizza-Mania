@@ -93,6 +93,8 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
     private Call<AutoCompleteResult> autoCompleteCall;
     private ArrayAdapter<AdapterItem> autoCompAdapter;
     private GlobalApp globalApp;
+    private Handler handler = new Handler();
+    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -266,24 +268,32 @@ public class SelectLocation extends FragmentActivity implements OnMapReadyCallba
         geoLocationText.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
-                if (!geoLocationText.getText().isEmpty()){
-                    getAutocomplete(autoCompleteService, geoLocationText.getText().toString(), 5, currentLocation.latitude, currentLocation.longitude, new HandleAutoComplete() {
-                        @Override
-                        public void onSuccess(AutoCompleteResult result) {
-//                            Toast.makeText(SelectLocation.this, String.valueOf(result.features.size()), Toast.LENGTH_SHORT).show();
-                            autoCompAdapter.clear();
-                            for (AutoCompleteResult.Feature feature : result.features){
-                                autoCompAdapter.add(new AdapterItem(feature.properties.name, feature.geometry.coordinates.getLast(), feature.geometry.coordinates.getFirst()));
-                            }
-                            autoCompAdapter.getFilter().filter(geoLocationText.getText(), geoLocationText);
-                        }
+                handler.removeCallbacks(runnable); //removing pending callbacks
 
+                if (!geoLocationText.getText().isEmpty()){
+                    runnable = new Runnable() {
                         @Override
-                        public void onFailure(Throwable t) {
-                            t.printStackTrace();
-                            Toast.makeText(SelectLocation.this, "Error encountered", Toast.LENGTH_SHORT).show();
+                        public void run() {
+                            getAutocomplete(autoCompleteService, geoLocationText.getText().toString(), 5, currentLocation.latitude, currentLocation.longitude, new HandleAutoComplete() {
+                                @Override
+                                public void onSuccess(AutoCompleteResult result) {
+//                            Toast.makeText(SelectLocation.this, String.valueOf(result.features.size()), Toast.LENGTH_SHORT).show();
+                                    autoCompAdapter.clear();
+                                    for (AutoCompleteResult.Feature feature : result.features){
+                                        autoCompAdapter.add(new AdapterItem(feature.properties.name, feature.geometry.coordinates.getLast(), feature.geometry.coordinates.getFirst()));
+                                    }
+                                    autoCompAdapter.getFilter().filter(geoLocationText.getText(), geoLocationText);
+                                }
+
+                                @Override
+                                public void onFailure(Throwable t) {
+                                    t.printStackTrace();
+                                    Toast.makeText(SelectLocation.this, "Error encountered", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                    });
+                    };
+                    handler.postDelayed(runnable, 500); //to avoid sending too many reqs
                 }
             }
 

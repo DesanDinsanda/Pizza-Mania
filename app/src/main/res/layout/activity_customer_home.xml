@@ -121,7 +121,6 @@
             app:layout_constraintVertical_bias="0.146" />
 
 
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/deliveryBox"
             android:layout_width="0dp"
@@ -132,11 +131,11 @@
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="16dp"
             app:cardElevation="8dp"
-            app:strokeWidth="2dp"
-            app:strokeColor="@android:color/holo_orange_dark"
-            app:layout_constraintTop_toBottomOf="@id/txtFirstName"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/txtFirstName"
+            app:strokeColor="@android:color/holo_orange_dark"
+            app:strokeWidth="2dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/select_location_btn"
@@ -148,21 +147,21 @@
                     android:id="@+id/imageView4"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    app:srcCompat="@drawable/ic_location"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintVertical_bias="0.5" />
+                    app:layout_constraintVertical_bias="0.5"
+                    app:srcCompat="@drawable/ic_location" />
 
                 <LinearLayout
                     android:id="@+id/textContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginStart="12dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/imageView4"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/txtDelivery"
@@ -187,6 +186,56 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/mapCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:strokeColor="@android:color/holo_orange_dark"
+            app:strokeWidth="2dp"
+            tools:layout_editor_absoluteX="57dp"
+            tools:layout_editor_absoluteY="266dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+
+            <FrameLayout
+                android:id="@+id/mapContainer"
+                android:layout_width="293dp"
+                android:layout_height="219dp"
+
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/map_marker"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/map"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/map"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/map_marker" />
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
