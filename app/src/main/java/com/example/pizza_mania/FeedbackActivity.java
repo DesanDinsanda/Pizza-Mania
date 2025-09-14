@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -23,17 +24,29 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class FeedbackActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int CAMERA_REQUEST = 2;
 
     EditText feedbackDescription;
     ImageView feedbackImage;
     Button btnSelectImage, btnSubmitFeedback;
     Uri imageUri = null;
+
+    FirebaseFirestore db;
+    StorageReference storageRef;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -54,7 +67,11 @@ public class FeedbackActivity extends AppCompatActivity {
         btnSelectImage = findViewById(R.id.btnSelectImage);
         btnSubmitFeedback = findViewById(R.id.btnSubmitFeedback);
 
-        // Ask camera permission if not already granted
+        // Firebase init
+        db = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference("feedback_images");
+
+        // Ask camera permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -80,14 +97,45 @@ public class FeedbackActivity extends AppCompatActivity {
                 return;
             }
 
-            // TODO: Upload feedbackText + imageUri to Firestore
-            Toast.makeText(this, "Feedback submitted successfully!", Toast.LENGTH_LONG).show();
-
-            // Reset form
-            feedbackDescription.setText("");
-            feedbackImage.setImageResource(R.drawable.ic_launcher_background);
-            imageUri = null;
+            if (imageUri != null) {
+                uploadImageAndSaveFeedback(feedbackText);
+            } else {
+                saveFeedbackToFirestore(feedbackText, null);
+            }
         });
+    }
+
+    private void uploadImageAndSaveFeedback(String feedbackText) {
+        String fileName = UUID.randomUUID().toString() + ".jpg";
+        StorageReference imgRef = storageRef.child(fileName);
+
+        imgRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot ->
+                        imgRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            saveFeedbackToFirestore(feedbackText, uri.toString());
+                        }))
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Image upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void saveFeedbackToFirestore(String feedbackText, @Nullable String imageUrl) {
+        Map<String, Object> feedback = new HashMap<>();
+        feedback.put("description", feedbackText);
+        feedback.put("imageUrl", imageUrl);
+        feedback.put("timestamp", System.currentTimeMillis());
+
+        db.collection("Feedback")
+                .add(feedback)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(this, "Feedback submitted!", Toast.LENGTH_LONG).show();
+                    feedbackDescription.setText("");
+                    feedbackImage.setImageResource(R.drawable.ic_launcher_background);
+                    imageUri = null;
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error saving feedback: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override
@@ -96,7 +144,6 @@ public class FeedbackActivity extends AppCompatActivity {
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == PICK_IMAGE_REQUEST && data != null) {
-                // Check if picked from gallery
                 imageUri = data.getData();
                 if (imageUri != null) {
                     try {
@@ -106,7 +153,6 @@ public class FeedbackActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else if (data.getExtras() != null) {
-                    // Captured from camera
                     Bitmap photo = (Bitmap) data.getExtras().get("data");
                     feedbackImage.setImageBitmap(photo);
                 }
