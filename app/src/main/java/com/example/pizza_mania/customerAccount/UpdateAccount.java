@@ -19,6 +19,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pizza_mania.R;
+import com.example.pizza_mania.customerHome.CustomerHome;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,7 +35,7 @@ import es.dmoral.toasty.Toasty;
 public class UpdateAccount extends AppCompatActivity {
 
     EditText txtFirstName, txtLastName, txtContact, txtEmail;
-    Button btnUpdate, btnDelete;
+    Button btnUpdate, btnDelete, btnLogOut;
     ImageView btnArrow;
     LinearLayout loadingLayout;
     ConstraintLayout contentLayout;
@@ -59,6 +60,7 @@ public class UpdateAccount extends AppCompatActivity {
         txtEmail = findViewById(R.id.txtEmail);
         btnUpdate = findViewById(R.id.btnUpdate);
         btnDelete = findViewById(R.id.btnDelete);
+        btnLogOut = findViewById(R.id.btnLogOut);
         loadingLayout = findViewById(R.id.loadingLayout);
         contentLayout = findViewById(R.id.contentLayout);
         btnArrow = findViewById(R.id.btnArrow);
@@ -69,9 +71,10 @@ public class UpdateAccount extends AppCompatActivity {
         uid = currentUser.getUid();
 
         loadCustomerDetails();
-        btnArrow.setOnClickListener(v-> startActivity(new Intent(UpdateAccount.this, AccountSettings.class)));
+        btnArrow.setOnClickListener(v-> startActivity(new Intent(UpdateAccount.this, CustomerHome.class)));
         btnUpdate.setOnClickListener(v-> updateDate());
         btnDelete.setOnClickListener(v-> deleteAccount());
+        btnLogOut.setOnClickListener(v-> logout());
     }
 
     public void changeInProgress(boolean inProgress){
@@ -146,7 +149,7 @@ public class UpdateAccount extends AppCompatActivity {
             public void onComplete(@NonNull Task<Void> task) {
                 if(task.isSuccessful()){
                     Toasty.success(UpdateAccount.this, "Successfully Updated", Toasty.LENGTH_SHORT).show();
-                    startActivity(new Intent(UpdateAccount.this, AccountSettings.class));
+                    startActivity(new Intent(UpdateAccount.this, CustomerHome.class));
                 }
                 else{
                     Toasty.error(UpdateAccount.this, "Error", Toasty.LENGTH_SHORT).show();
@@ -196,6 +199,19 @@ public class UpdateAccount extends AppCompatActivity {
 
 
 
+    }
+
+    public void logout(){
+        new androidx.appcompat.app.AlertDialog.Builder(this).setTitle("Do you want to log out").setMessage("You will be signed out from your account.")
+                .setPositiveButton("Yes", (dialog, which)->{
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(new Intent(UpdateAccount.this, LoginActivity.class));
+                    finish();
+                })
+                .setNegativeButton("No", (dialog, which)->{
+                    dialog.dismiss();
+
+                }).show();
     }
 
 }

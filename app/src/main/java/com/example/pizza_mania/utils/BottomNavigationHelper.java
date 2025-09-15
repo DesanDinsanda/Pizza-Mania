@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 
 import com.example.pizza_mania.customerAccount.AccountSettings;
+import com.example.pizza_mania.customerAccount.UpdateAccount;
 import com.example.pizza_mania.customerHome.CustomerHome;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -36,7 +37,7 @@ public class BottomNavigationHelper {
                 return true;
             }
             else if (itemId == R.id.nav_profile) {
-                activity.startActivity(new Intent(activity, AccountSettings.class));
+                activity.startActivity(new Intent(activity, UpdateAccount.class));
                 activity.overridePendingTransition(0, 0);
                 return true;
             }
