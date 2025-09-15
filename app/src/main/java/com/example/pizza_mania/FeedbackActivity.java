@@ -50,7 +50,7 @@ public class FeedbackActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
 
-        // ✅ Make sure you use the feedback layout, not activity_main
+        // Use the feedback layout
         setContentView(R.layout.activity_feedback);
 
         // Handle system bars padding
@@ -70,7 +70,7 @@ public class FeedbackActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference("feedback");
 
-        // Ask camera permission (optional, for capturing photo)
+        // Ask camera permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -102,6 +102,36 @@ public class FeedbackActivity extends AppCompatActivity {
                 saveFeedbackToFirestore(feedbackText, null);
             }
         });
+    }
+
+    // Convert Bitmap to Uri
+    private Uri getImageUriFromBitmap(Bitmap bitmap) {
+        String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "FeedbackPhoto", null);
+        return Uri.parse(path);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK && requestCode == PICK_IMAGE_REQUEST && data != null) {
+
+            if (data.getData() != null) {
+                // Selected from gallery
+                imageUri = data.getData();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    feedbackImage.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (data.getExtras() != null) {
+                // Captured from camera
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                feedbackImage.setImageBitmap(photo);
+                imageUri = getImageUriFromBitmap(photo); // ✅ convert bitmap to Uri
+            }
+        }
     }
 
     private void uploadImageAndSaveFeedback(String feedbackText) {
@@ -136,27 +166,5 @@ public class FeedbackActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error saving feedback: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == PICK_IMAGE_REQUEST && data != null) {
-                imageUri = data.getData();
-                if (imageUri != null) {
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-                        feedbackImage.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else if (data.getExtras() != null) {
-                    Bitmap photo = (Bitmap) data.getExtras().get("data");
-                    feedbackImage.setImageBitmap(photo);
-                }
-            }
-        }
     }
 }
