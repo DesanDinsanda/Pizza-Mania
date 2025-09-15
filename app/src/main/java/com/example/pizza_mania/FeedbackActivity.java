@@ -1,5 +1,6 @@
 package com.example.pizza_mania;
 
+import com.google.firebase.Timestamp;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -153,7 +154,7 @@ public class FeedbackActivity extends AppCompatActivity {
         Map<String, Object> feedback = new HashMap<>();
         feedback.put("description", feedbackText);
         feedback.put("feedImage", imageUrl);
-        feedback.put("submittedOn", System.currentTimeMillis());
+        feedback.put("submittedOn", Timestamp.now());
 
         db.collection("Feedback")
                 .add(feedback)
