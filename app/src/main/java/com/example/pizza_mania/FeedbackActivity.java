@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -24,12 +23,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -53,7 +49,9 @@ public class FeedbackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+
+        // ✅ Make sure you use the feedback layout, not activity_main
+        setContentView(R.layout.activity_feedback);
 
         // Handle system bars padding
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -62,6 +60,7 @@ public class FeedbackActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Initialize UI elements
         feedbackDescription = findViewById(R.id.feedbackDescription);
         feedbackImage = findViewById(R.id.feedbackImage);
         btnSelectImage = findViewById(R.id.btnSelectImage);
@@ -69,9 +68,9 @@ public class FeedbackActivity extends AppCompatActivity {
 
         // Firebase init
         db = FirebaseFirestore.getInstance();
-        storageRef = FirebaseStorage.getInstance().getReference("feedback_images");
+        storageRef = FirebaseStorage.getInstance().getReference("feedback");
 
-        // Ask camera permission
+        // Ask camera permission (optional, for capturing photo)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
@@ -112,6 +111,7 @@ public class FeedbackActivity extends AppCompatActivity {
         imgRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot ->
                         imgRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            // Save feedback with image URL
                             saveFeedbackToFirestore(feedbackText, uri.toString());
                         }))
                 .addOnFailureListener(e -> {
@@ -122,8 +122,8 @@ public class FeedbackActivity extends AppCompatActivity {
     private void saveFeedbackToFirestore(String feedbackText, @Nullable String imageUrl) {
         Map<String, Object> feedback = new HashMap<>();
         feedback.put("description", feedbackText);
-        feedback.put("imageUrl", imageUrl);
-        feedback.put("timestamp", System.currentTimeMillis());
+        feedback.put("feedImage", imageUrl);
+        feedback.put("submittedOn", System.currentTimeMillis());
 
         db.collection("Feedback")
                 .add(feedback)
