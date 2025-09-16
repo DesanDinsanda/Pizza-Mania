@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PizzaMania">
         <activity
+            android:name=".OrderActivitiesActivity"
+            android:exported="false" />
+        <activity
             android:name=".FeedbackActivity"
             android:exported="false" />
         <activity
