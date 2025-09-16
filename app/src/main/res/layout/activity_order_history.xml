@@ -1,289 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".OrderHistoryActivity">
+    android:padding="16dp"
+    android:background="#FFFFFF">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:srcCompat="@drawable/ic_arrow_right"
-            tools:layout_editor_absoluteX="29dp"
-            tools:layout_editor_absoluteY="39dp" />
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="27dp"
-            android:text="Order Activities"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            tools:layout_editor_absoluteX="106dp"
-            tools:layout_editor_absoluteY="53dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tvOrderHistoryTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp">
+        android:text="Order History"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="16dp"/>
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="131dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="11dp"
-            android:backgroundTint="#4D4949"
-            android:text="Completed"
-            android:textSize="14dp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btOngoing"
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:backgroundTint="#4D4949"
-            android:textStyle="bold"
-            android:text="Ongoing" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:backgroundTint="#4D4949"
-            android:textStyle="bold"
-            android:text="Feedback" />
-    </LinearLayout>
-
-    <LinearLayout
+    <!-- Divider line -->
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_stroke_darkgrey"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:orientation="vertical">
+        android:layout_height="1dp"
+        android:background="#CCCCCC"
+        android:layout_marginBottom="16dp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/bg_stroke_white">
+    <!-- RecyclerView to show order list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvOrderHistory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Order: "
-            android:textSize="24dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:textStyle="bold"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="10dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="For "
-                android:textSize="16dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contact: "
-                android:textSize="16dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Order Status: "
-                android:textSize="16dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Order ID: "
-                android:layout_marginTop="15dp"
-                android:textSize="20dp"
-                android:textColor="#4D4949"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Delivery Location: "
-                android:layout_marginTop="20dp"
-                android:textSize="20dp"
-                android:textColor="#4D4949"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Branch: "
-                android:textSize="20dp"
-                android:textColor="#4D4949"
-                android:textStyle="bold"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="menu item "
-                    android:textSize="16dp"
-                    android:layout_marginBottom="20dp"/>
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Delivery Charge: Rs."
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    android:textColor="#615F5F"
-                    android:layout_marginBottom="30dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Total Bill: Rs. "
-                    android:textSize="24dp"
-                    android:textStyle="bold"
-                    android:textColor="#4D4949"
-                    android:layout_marginBottom="30dp"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:layout_marginTop="20dp">
-
-       <ImageButton
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:src="@drawable/ic_double_arrow_left"
-           android:id="@+id/doubleArrowLeft"
-           android:background="#FFFFFF"
-           android:layout_marginLeft="2dp"/>
-
-       <ImageButton
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:src="@drawable/bt_previous"
-           android:id="@+id/btPrevious"
-           android:background="#FFFFFF"
-           android:layout_marginLeft="5dp"/>
-
-       <ImageButton
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:src="@drawable/bt_next"
-           android:id="@+id/btNext"
-           android:background="#FFFFFF"
-           android:layout_marginLeft="6dp"/>
-
-       <ImageButton
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:src="@drawable/ic_double_arrow_right"
-           android:id="@+id/doubleArrowRight"
-           android:background="#FFFFFF"
-           android:layout_marginLeft="5dp"/>
-
-
-   </LinearLayout>
-
-   <RelativeLayout
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_marginBottom="30dp"
-       android:id="@+id/RelativeBottomBar">
-
-       <View
-           android:layout_width="match_parent"
-           android:layout_height="1dp"
-           android:background="#4D4949"
-           android:layout_above="@+id/bottomBar"
-           android:layout_marginBottom="15dp"/>
-
-       <LinearLayout
-           android:layout_alignParentBottom="true"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:id="@+id/bottomBar">
-
-           <ImageButton
-               android:id="@+id/iconHome"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginLeft="30dp"
-               android:src="@drawable/ic_home"
-               android:background="#FFFFFF"/>
-
-           <ImageButton
-               android:id="@+id/iconMenu"
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="60dp"
-               android:src="@drawable/ic_menu"
-               android:background="#FFFFFF"/>
-
-           <ImageButton
-               android:id="@+id/iconOrder"
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"
-               android:layout_marginLeft="60dp"
-               android:src="@drawable/ic_order_activities"
-               android:background="#FFFFFF"/>
-
-           <ImageButton
-               android:id="@+id/iconProfile"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:layout_marginLeft="60dp"
-               android:src="@drawable/ic_profile"
-               android:background="#FFFFFF"/>
-
-
-       </LinearLayout>
-   </RelativeLayout>
 </LinearLayout>
