@@ -1,5 +1,7 @@
 package com.example.pizza_mania;
 
+import com.example.pizza_mania.utils.BottomNavigationHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -103,6 +105,9 @@ public class FeedbackActivity extends AppCompatActivity {
                 saveFeedbackToFirestore(feedbackText, null);
             }
         });
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationHelper.setupBottomNavigation(this, bottomNavigationView, R.id.nav_feedback);
     }
 
     // Convert Bitmap to Uri

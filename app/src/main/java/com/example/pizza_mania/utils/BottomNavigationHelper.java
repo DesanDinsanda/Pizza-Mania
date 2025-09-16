@@ -1,4 +1,5 @@
 package com.example.pizza_mania.utils;
+import com.example.pizza_mania.FeedbackActivity;
 import com.example.pizza_mania.OrderHistoryActivity;
 import com.example.pizza_mania.menu.MenuActivity;
 import com.example.pizza_mania.R;
@@ -38,6 +39,11 @@ public class BottomNavigationHelper {
             }
             else if (itemId == R.id.nav_profile) {
                 activity.startActivity(new Intent(activity, UpdateAccount.class));
+                activity.overridePendingTransition(0, 0);
+                return true;
+            }
+            else if (itemId == R.id.nav_feedback) {
+                activity.startActivity(new Intent(activity, FeedbackActivity.class));
                 activity.overridePendingTransition(0, 0);
                 return true;
             }
