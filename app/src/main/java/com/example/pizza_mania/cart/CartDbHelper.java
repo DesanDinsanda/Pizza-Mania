@@ -1,4 +1,4 @@
-package com.example.pizza_mania;
+package com.example.pizza_mania.cart;
 
 import android.content.ContentValues;
 import android.content.Context;

@@ -1,11 +1,8 @@
-package com.example.pizza_mania;
+package com.example.pizza_mania.menu;
 
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -15,10 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pizza_mania.cart.CartActivity;
+import com.example.pizza_mania.GlobalApp;
+import com.example.pizza_mania.R;
 import com.example.pizza_mania.utils.BottomNavigationHelper;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.firebase.Firebase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 

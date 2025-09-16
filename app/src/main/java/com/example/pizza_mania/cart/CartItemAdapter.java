@@ -1,4 +1,4 @@
-package com.example.pizza_mania;
+package com.example.pizza_mania.cart;
 
 import android.content.Context;
 import android.os.Handler;
@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.pizza_mania.R;
 
 import java.util.List;
 import java.util.concurrent.Executor;
