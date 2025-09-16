@@ -49,7 +49,7 @@ public class MenuActivity extends AppCompatActivity {
         getBranch(currentLocation);
 
         cartIcon = findViewById(R.id.cart);
-        branchSpinner = findViewById(R.id.branch_spinner);
+        //branchSpinner = findViewById(R.id.branch_spinner);
         btnPizza = findViewById(R.id.btn_pizza);
         btnDessert = findViewById(R.id.btn_dessert);
         btnDrink = findViewById(R.id.btn_drink);
@@ -65,20 +65,20 @@ public class MenuActivity extends AppCompatActivity {
 
 //        loadBranches();
 
-        branchSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-
-            @Override
-            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                selectedBranch = branchList.get(position);
-                if (adapter != null) adapter.setBranchName(selectedBranch);
-                loadMenuItems(selectedCategory);
-            }
-
-            @Override
-            public void onNothingSelected(android.widget.AdapterView<?> parent) {
-
-            }
-        });
+//        branchSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+//
+//            @Override
+//            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+//                selectedBranch = branchList.get(position);
+//                if (adapter != null) adapter.setBranchName(selectedBranch);
+//                loadMenuItems(selectedCategory);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+//
+//            }
+//        });
 
         //category buttons
         btnPizza.setOnClickListener(v -> {

@@ -32,18 +32,18 @@
 
     </RelativeLayout>
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#D3D3D3"
-        android:padding="4dp">
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="#D3D3D3"-->
+<!--        android:padding="4dp">-->
 
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/branch_spinner"/>
+<!--        <Spinner-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/branch_spinner"/>-->
 
-    </FrameLayout>
+<!--    </FrameLayout>-->
 
     <!-- nav bar-->
     <LinearLayout
