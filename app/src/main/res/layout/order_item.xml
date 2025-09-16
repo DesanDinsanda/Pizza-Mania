@@ -10,64 +10,6 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btBackToHome"
-            android:backgroundTint="#FB6F38"
-            android:text="Home"
-            android:textColor="@color/white"/>
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="27dp"
-            android:layout_marginLeft="35dp"
-            android:text="Order Activities"
-            android:textSize="24sp"
-            android:textStyle="bold"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="20dp">
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="131dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="1dp"
-            android:backgroundTint="#4D4949"
-            android:text="Completed"
-            android:textSize="14dp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/btOngoing"
-            android:layout_width="126dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:backgroundTint="#4D4949"
-            android:textStyle="bold"
-            android:text="Ongoing" />
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="2dp"
-            android:backgroundTint="#4D4949"
-            android:textStyle="bold"
-            android:text="Feedback" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 

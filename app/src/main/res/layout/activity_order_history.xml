@@ -6,6 +6,28 @@
     android:padding="16dp"
     android:background="#FFFFFF">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"
+            android:id="@+id/btHome"
+            android:backgroundTint="#FB6F38"
+            android:textColor="@color/white"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feedback"
+                android:layout_marginLeft="120dp"
+                android:backgroundTint="#4D4949"
+                android:id="@+id/btFeed"
+                android:textColor="@color/white"/>
+    </LinearLayout>
+
     <!-- Title -->
     <TextView
         android:id="@+id/tvOrderHistoryTitle"
