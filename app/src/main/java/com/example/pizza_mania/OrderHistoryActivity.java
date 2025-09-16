@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,6 +33,7 @@ public class OrderHistoryActivity extends AppCompatActivity {
     private OrderAdapter orderAdapter;
     private List<Order> orderList;
     private FirebaseFirestore db;
+    DocumentReference cusRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +48,16 @@ public class OrderHistoryActivity extends AppCompatActivity {
         rvOrderHistory.setAdapter(orderAdapter);
 
         db = FirebaseFirestore.getInstance();
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser cus = auth.getCurrentUser();
+        cusRef = db.document("Customer/"+cus.getUid());
 
         loadOrders();
     }
 
     private void loadOrders() {
         db.collection("Order")
+                .whereEqualTo("cusID", cusRef)
                 .get()
                 .addOnSuccessListener((QuerySnapshot queryDocumentSnapshots) -> {
                     orderList.clear();
