@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pizza_mania.utils.BottomNavigationHelper;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -52,6 +54,8 @@ public class OrderHistoryActivity extends AppCompatActivity {
         FirebaseUser cus = auth.getCurrentUser();
         cusRef = db.document("Customer/"+cus.getUid());
 
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        BottomNavigationHelper.setupBottomNavigation(this, bottomNavigationView, R.id.nav_history);
         loadOrders();
     }
 

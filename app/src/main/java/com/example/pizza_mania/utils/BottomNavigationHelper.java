@@ -1,4 +1,5 @@
 package com.example.pizza_mania.utils;
+import com.example.pizza_mania.OrderHistoryActivity;
 import com.example.pizza_mania.menu.MenuActivity;
 import com.example.pizza_mania.R;
 import android.app.Activity;
@@ -31,7 +32,7 @@ public class BottomNavigationHelper {
                 return true;
             }
             else if (itemId == R.id.nav_history) {
-                activity.startActivity(new Intent(activity, CustomerHome.class));
+                activity.startActivity(new Intent(activity, OrderHistoryActivity.class));
                 activity.overridePendingTransition(0, 0);
                 return true;
             }
