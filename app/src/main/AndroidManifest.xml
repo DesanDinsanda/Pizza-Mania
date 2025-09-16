@@ -2,7 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".GlobalApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,6 +16,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PizzaMania">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
+        <activity
+            android:name=".SelectLocation"
+            android:exported="true"
+            android:label="@string/title_activity_select_location"></activity>
         <activity
             android:name=".OrderActivitiesActivity"
             android:exported="false" />
@@ -25,7 +39,25 @@
             android:exported="false"
             tools:ignore="Instantiatable" />
         <activity
-            android:name=".MainActivity"
+            android:name=".customerAccount.UpdateAccount"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.AccountSettings"
+            android:exported="false" />
+        <activity
+            android:name=".customerHome.CustomerHome"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.SignupAddDetails"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.SignupMain"
+            android:exported="false" />
+        <activity
+            android:name=".customerAccount.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,6 +65,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+        <activity
+            android:name=".cart.CartActivity"
+            android:exported="false"/>
+  
+      <activity
+            android:name=".menu.MenuActivity"
+            android:exported="false"/>
+
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>

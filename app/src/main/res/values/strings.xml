@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Pizza-Mania</string>
+    <string name="title_activity_select_location">SelectLocation</string>
+
+    <!--    select-location-->
+    <string name="location_heading">Select a delivery location</string>
+    <string name="my_location_text">Your Location</string>
+    <string name="select_location_btn">Select Location</string>
+    <string name="search_location">Search</string>
+    <string name="search_location_hint">"      "Enter address</string>
+    <string name="location_not_in_country">Entered location is not within Sri Lanka</string>
+    <string name="fetching_location">Fetching Location</string>
+    <string name="home_location_btn_manual">CUSTOM LOCATION</string>
+
+    <!--    payment button-->
+    <string name="payment_btn_enabled">Place Order</string>
+    <string name="payment_btn_loading">Loading...</string>
+    <string name="payment_btn_done">Order Placed</string>
+    <string name="payment_btn_try_again">Try Again</string>
+
 </resources>

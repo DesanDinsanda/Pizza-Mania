@@ -24,7 +24,6 @@
         android:layout_height="1dp"
         android:background="#CCCCCC"
         android:layout_marginBottom="16dp"/>
-
     <!-- RecyclerView to show order list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvOrderHistory"

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:layout_marginTop="20dp">
+
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:id="@+id/pizza_logo"
+            android:src="@drawable/pizza_logo"
+            android:layout_alignParentStart="true"
+            android:scaleType="fitCenter"/>
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/cart"
+            android:src="@drawable/cart"
+            android:layout_alignParentEnd="true"
+            android:contentDescription="Cart"/>
+
+    </RelativeLayout>
+
+<!--    <FrameLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="#D3D3D3"-->
+<!--        android:padding="4dp">-->
+
+<!--        <Spinner-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/branch_spinner"/>-->
+
+<!--    </FrameLayout>-->
+
+    <!-- nav bar-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nav_bar"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_pizza"
+            android:backgroundTint="@color/lightYellow"
+            android:text="Pizzas"
+            android:textSize="20dp"
+            android:textColor="@color/brown"
+            android:layout_marginLeft="1dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_dessert"
+            android:backgroundTint="@color/lightYellow"
+            android:text="Desserts"
+            android:textSize="20dp"
+            android:textColor="@color/brown"
+            android:layout_marginLeft="1dp"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_drink"
+            android:backgroundTint="@color/lightYellow"
+            android:text="Drinks"
+            android:textSize="20dp"
+            android:textColor="@color/brown"
+            android:layout_marginLeft="1dp"/>
+
+
+    </LinearLayout>
+
+    <!-- menu item list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:id="@+id/menu_recycle_view"
+        android:layout_weight="1"
+        android:padding="8dp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_view_cart"
+        android:text="View Cart"
+        android:backgroundTint="@color/lightYellow"
+        android:textSize="20dp"
+        android:textColor="@color/brown"
+        android:layout_marginBottom="20dp"/>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="?android:attr/windowBackground"
+        app:itemIconTint="@color/brown"
+        app:itemTextColor="@color/black"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:menu="@menu/bottom_nav_menu" />
+
+</LinearLayout>
