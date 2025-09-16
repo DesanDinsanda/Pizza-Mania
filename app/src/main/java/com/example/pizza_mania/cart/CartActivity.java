@@ -1,4 +1,4 @@
-package com.example.pizza_mania;
+package com.example.pizza_mania.cart;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.pizza_mania.GlobalApp;
+import com.example.pizza_mania.R;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,11 +22,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.stripe.android.PaymentConfiguration;
-import com.stripe.android.model.Address;
 import com.stripe.android.paymentsheet.PaymentSheet;
 import com.stripe.android.paymentsheet.PaymentSheetResult;
-
-import org.checkerframework.checker.units.qual.C;
 
 import java.io.IOException;
 import java.util.ArrayList;

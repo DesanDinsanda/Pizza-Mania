@@ -1,4 +1,4 @@
-package com.example.pizza_mania;
+package com.example.pizza_mania.menu;
 
 import android.content.Context;
 import android.os.Handler;
@@ -17,8 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
-import org.jetbrains.annotations.NotNull;
+import com.example.pizza_mania.cart.CartDbHelper;
+import com.example.pizza_mania.R;
 
 import java.util.ArrayList;
 import java.util.List;

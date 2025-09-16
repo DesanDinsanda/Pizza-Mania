@@ -5,7 +5,8 @@
     android:orientation="vertical"
     android:padding="8dp"
     android:layout_margin="4dp"
-    android:background="#D3D3D3">
+    android:elevation="10dp"
+    android:background="@android:color/white">
 
     <ImageView
         android:layout_width="match_parent"

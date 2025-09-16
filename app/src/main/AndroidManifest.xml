@@ -58,11 +58,11 @@
 
 
         <activity
-            android:name=".CartActivity"
+            android:name=".cart.CartActivity"
             android:exported="false"/>
   
       <activity
-            android:name=".MenuActivity"
+            android:name=".menu.MenuActivity"
             android:exported="false"/>
 
 

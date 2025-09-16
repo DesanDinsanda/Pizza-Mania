@@ -1,10 +1,9 @@
 package com.example.pizza_mania.utils;
-import com.example.pizza_mania.MenuActivity;
+import com.example.pizza_mania.menu.MenuActivity;
 import com.example.pizza_mania.R;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.example.pizza_mania.customerAccount.AccountSettings;
 import com.example.pizza_mania.customerAccount.UpdateAccount;
 import com.example.pizza_mania.customerHome.CustomerHome;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
