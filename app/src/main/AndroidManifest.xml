@@ -26,8 +26,18 @@
             android:exported="true"
             android:label="@string/title_activity_select_location"></activity>
         <activity
+            android:name=".OrderActivitiesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FeedbackActivity"
+            android:exported="false" />
+        <activity
             android:name=".OrderHistoryActivity"
             android:exported="false" />
+        <activity
+            android:name=".OrderStatusActivity"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
         <activity
             android:name=".customerAccount.UpdateAccount"
             android:exported="false" />
